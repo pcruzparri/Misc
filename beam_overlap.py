@@ -37,11 +37,11 @@ def clipped_arr(arr, thresh=0.5):
 
 # Constants
 print('Setting constants...')
-thresh = 0.1
+thresh = 0.5
 n = 61 # um
-d = 201
+d = 101
 abc_fwhm = np.array([10]*3) # um
-abc_angles = np.array([(-1.5, 0, 0), (30, 0, 0), (0, 0, 0)]) #deg
+abc_angles = np.array([(-1.5, 45, 0), (40, 0, 0), (0, 0, 0)]) #deg
 thickness = 10
 
 # Preparing Matrices
@@ -56,9 +56,10 @@ for beam in range(len(abc_fwhm)):
         arr3d = rotate(arr3d, rot, axes=(rot_ind, (rot_ind+1)%3), reshape=False, mode='nearest')
     ls_beams.append(arr3d)
 
+
 # Calculating volume
 print('Calculating volume...')
-vol = np.sum(np.multiply(np.multiply(ls_beams[0], ls_beams[1]), ls_beams[2])) # um
+vol = np.sum(np.multiply(np.multiply(ls_beams[0], ls_beams[1]), ls_beams[2])) # um^3
 vol2 = vol*(10**-12)
 print(f'The calculated volume is {vol} $um^3$, or {vol2} $cm^3$')
 
@@ -67,13 +68,19 @@ if vis:
     print('Visualizing...')
     # Creating plot
     plotter = pv.Plotter()
-    plotter.add_mesh(clipped_arr(ls_beams[0], thresh=thresh), color='g')
+    plotter.add_mesh(clipped_arr(ls_beams[0], thresh=thresh), color='g', )
     plotter.add_mesh(clipped_arr(ls_beams[1], thresh=thresh), color='r')
     plotter.add_mesh(clipped_arr(ls_beams[2], thresh=thresh), color='b')
+    plotter.show_grid()
     plotter.show()
-    int_plotter = pv.PolyData(clipped_arr(np.multiply(np.multiply(ls_beams[0], ls_beams[1]), ls_beams[2]), thresh=0.1))
-    #int_plotter.plot()
-    int_volume = int_plotter.delaunay_3d(alpha=10)
+    int_plotter = pv.PolyData(clipped_arr(np.multiply(np.multiply(ls_beams[0], ls_beams[1]), ls_beams[2]), thresh=thresh))
+    int_plotter.plot()
+    '''int_volume = int_plotter.delaunay_3d(alpha=1)
     shell = int_volume.extract_geometry()
     print(shell.volume, 'um^3, or', shell.volume/(10**12), 'cm^3')
     shell.plot()
+    int_volume = int_plotter.reconstruct_surface(sample_spacing=0.1, progress_bar=True)
+    shell = int_volume.extract_geometry()
+    print(shell.volume)
+    shell.plot()'''
+    
