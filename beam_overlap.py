@@ -54,14 +54,16 @@ def get_plane_overlap(arr1, arr2, thresh=0.5, clip=(0,20), return_points=False):
 def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[]):
     '''Calculate and visualize multiple beam interaction
     
-    Parameters:
+    Parameters
+    ----------
+
     angles: (N, 3) array 
         Contains the set of three rotation angles for N beams in degrees. Rotations are described in the [xy, yz, zx] planes.
 
     fwhm: (N, ) array
         Contains the FWHM for each beam in microns.
     
-    size: (xy, z) array
+    size: (x or y, z) array
         Sets the size of the box with dimensions x*y*z (in microns) where the xy plane slices the beam and z is the default direction of propagation.
     
     thresh: float
@@ -74,14 +76,24 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
         Set the intensity of each beam such that the sum of a slice through the axis of propagation is equal to the beam's intensity.
 
     norm: (N, ) bool array
-        Set whether the beam intensity should be normalized and weighed by amp. amp does not apply without norm=True for the beam.
+        Set whether the beam intensity should be normalized and weighed by amp. amp is not applied without norm=True for the beam.
 
-    Return:
+    Return
+    ----------
+
     (vol_um3, vol_cm3)
         Returns a tuple of with the interaction volume of the beams in cubic microns and in cubic centimeters.
+
+    Example
+    ----------
+    angles = np.array([[-10, 0, 0], [0, 0, 0], [30, 0, 0]])
+    fwhm = np.array([10]*len(angles))
+    size = (50, 200)
+
+    interaction_volume(angles, fwhm, size, thresh=0.2, vis=True)
     '''
     
-    print('Running preliminary tests...')
+    print('Checking parameters...')
     assert False not in list(map(lambda x: isinstance(x, Sequence) | isinstance(x, np.ndarray), 
                                  [angles, fwhm, size, amp, norm])), 'angles, fwhm, size, amp, and norm must be iterables.'
     assert max(fwhm)<0.75*size[0] and max(fwhm)<0.75*size[1], 'Consider smaller FWHM relative to smallest box dimension for more accurate results.'
@@ -102,13 +114,14 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
         for rot_ind, rot in enumerate(angles[beam]):
             arr3d = rotate(arr3d, rot, axes=(rot_ind, (rot_ind+1)%3), reshape=False, mode='nearest')
         ls_beams.append(arr3d)
+    
+    beam_product = reduce(np.multiply, ls_beams)
 
     print('Checking inclusion of interaction volume in box')
     for beam in range(len(angles)):
-        if get_plane_overlap(*(ls_beams[beam],ls_beams[(beam+1)%3]), thresh=thresh, clip=(0,size[1]-1)):
+        if get_plane_overlap(*(ls_beams[beam], ls_beams[(beam+1)%3]), thresh=thresh, clip=(0,size[1]-1)):
             warnings.warn(f'Beams {beam} and {(beam+1)%3} are overlapping at the edges. Consider extending the box size or changing the angles.')
 
-    vis = True
     assert thresh<np.min([np.max(i) for i in ls_beams]), f'Thresh should be less than {np.min(np.max(ls_beams, axis=1))}'
     if vis:
         from pyvista import Plotter, PolyData, global_theme
@@ -118,15 +131,17 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
         # Plotting beams
         plotter = Plotter()
         for beam in ls_beams:
+            
+            print('HERE')
             plotter.add_mesh(clipped_arr(beam, thresh=thresh), point_size=10, opacity=0.7)
         plotter.show_grid()
         plotter.show()
         #Plotting interaction volume
-        int_plotter = PolyData(clipped_arr(reduce(np.multiply, ls_beams), thresh=thresh**len(fwhm)))
+        int_plotter = PolyData(clipped_arr(beam_product, thresh=thresh**len(fwhm)))
         int_plotter.plot()
 
     # Calculating volume
     print('Calculating volume...')
-    vol_um3 = np.sum(reduce(np.multiply, ls_beams)) # um^3
+    vol_um3 = np.sum(beam_product) # um^3
     vol_cm3 = vol_um3*(10**-12)
     return vol_um3, vol_cm3
