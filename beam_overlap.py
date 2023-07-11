@@ -90,7 +90,7 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
     fwhm = np.array([10]*len(angles))
     size = (50, 200)
 
-    interaction_volume(angles, fwhm, size, thresh=0.2, vis=True)
+    interaction_volume(angles, fwhm, size, thresh=0.1, vis=True)
     '''
     
     print('Checking parameters...')
@@ -126,22 +126,35 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
     if vis:
         from pyvista import Plotter, PolyData, global_theme
         global_theme.color_cycler = 'default'
-
         print('Visualizing...')
         # Plotting beams
-        plotter = Plotter()
+        plotter = Plotter(shape=(1, 2))
+        plotter.subplot(0, 0)
         for beam in ls_beams:
-            
-            print('HERE')
-            plotter.add_mesh(clipped_arr(beam, thresh=thresh), point_size=10, opacity=0.7)
+            arr_pts = clipped_arr(beam, thresh=thresh)
+            plotter.add_mesh(arr_pts,
+                             scalars=beam[tuple(arr_pts.T)],
+                             cmap='YlGnBu',
+                             style='points_gaussian',
+                             opacity='linear',
+                             show_edges=False)
         plotter.show_grid()
-        plotter.show()
         #Plotting interaction volume
-        int_plotter = PolyData(clipped_arr(beam_product, thresh=thresh**len(fwhm)))
-        int_plotter.plot()
+        plotter.subplot(0, 1)
+        int_pts = clipped_arr(beam_product, thresh=thresh**len(fwhm))
+        plotter.add_mesh(int_pts,
+                         scalars=beam_product[tuple(int_pts.T)],
+                         cmap='YlGnBu',
+                         point_size=10,
+                         style='points_gaussian',
+                         opacity='linear',
+                         show_edges=False)
+        plotter.show_grid()
+        plotter.link_views()
+        plotter.show()
 
     # Calculating volume
     print('Calculating volume...')
     vol_um3 = np.sum(beam_product) # um^3
-    vol_cm3 = vol_um3*(10**-12)
+    vol_cm3 = vol_um3*(10**-12) # cm^3
     return vol_um3, vol_cm3
