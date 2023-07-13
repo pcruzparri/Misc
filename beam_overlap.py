@@ -51,7 +51,7 @@ def get_plane_overlap(arr1, arr2, thresh=0.5, clip=(0,20), return_points=False):
     if return_points: return p1_arr, p2_arr #point locations in 3D matrix on two planes of the box along an axis
     else: return p1_arr.size #Due to symmetry, only get the size overlapping point list on one of the planes. 
 
-def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[]):
+def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[], clip=(0, -1)):
     '''Calculate and visualize multiple beam interaction
     
     Parameters
@@ -113,7 +113,7 @@ def interaction_volume(angles, fwhm, size, thresh=0.5, vis=False, amp=[], norm=[
         arr3d = np.array([arr2d]*size[1])
         for rot_ind, rot in enumerate(angles[beam]):
             arr3d = rotate(arr3d, rot, axes=(rot_ind, (rot_ind+1)%3), reshape=False, mode='nearest')
-        ls_beams.append(arr3d)
+        ls_beams.append(arr3d[clip[0]:clip[1]])
     
     beam_product = reduce(np.multiply, ls_beams)
 
