@@ -1,6 +1,4 @@
-from ast import excepthandler
 import csv
-from multiprocessing import Value
 from pathlib import Path
 import easygui
 
