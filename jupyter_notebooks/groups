@@ -1,0 +1,117 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "2eef4709-ad33-4d96-a9dd-33350ae01d59",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import random"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "bcbc13ed-d11d-4875-a6e5-af500a3f1610",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "names = [\"Sarah\",\n",
+    "         \"Alex\",\n",
+    "         \"Ava\",\n",
+    "         \"Brody\",\n",
+    "         \"Evangeline\",\n",
+    "         \"Ruby\",\n",
+    "         \"Aria\",\n",
+    "         \"Miles\",\n",
+    "         \"Nick\",\n",
+    "         \"Fiona\",\n",
+    "         \"John\",\n",
+    "         \"Aidan\",\n",
+    "         \"Kayla\",\n",
+    "         \"Audrey\",\n",
+    "         \"Anesha\",\n",
+    "         \"Owen\"]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "3279ed20-c5b0-4d08-bda1-f932ee3888ab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "g1, g2 = np.split(np.array(names), 2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "1c470883-038f-4879-9fe8-c5f3445169e3",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "('Sarah', 'Kayla')\n",
+      "('Alex', 'John')\n",
+      "('Ava', 'Fiona')\n",
+      "('Brody', 'Aidan')\n",
+      "('Evangeline', 'Anesha')\n",
+      "('Ruby', 'Nick')\n",
+      "('Aria', 'Owen')\n",
+      "('Miles', 'Audrey')\n"
+     ]
+    }
+   ],
+   "source": [
+    "partners = random.sample(list(g2), len(g2))\n",
+    "for i in zip(g1, partners):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "81806b8e-603d-49c1-b4ca-1fb9f1968713",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "('Sarah', 'Aria')\n",
+    "('Audrey', 'Alex')\n",
+    "('Ava', 'Anesha')\n",
+    "('Brody', 'Aidan')\n",
+    "('Evangeline', 'Fiona')\n",
+    "('Ruby', 'Owen')\n",
+    "('Kayla', 'John')\n",
+    "('Miles', 'Nick')\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "pyms_kernel",
+   "language": "python",
+   "name": "pyms_kernel"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
