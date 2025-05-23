@@ -1,3 +1,12 @@
+"""
+Description: 
+    This is a short data extraction script from absorbance data 
+    to plot said data as well as the observed kinetic profiles. 
+Authors: 
+    - yaresliecruzrivera
+    - pcruzparri
+"""
+
 # Packages
 import numpy as np
 import matplotlib.pyplot as plt
