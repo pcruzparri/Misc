@@ -2,4 +2,6 @@
 *.txt 
 .vs 
 *.json 
-*.tsv 
+*.tsv
+__pycache__/
+*.pyc

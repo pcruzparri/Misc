@@ -160,26 +160,32 @@ class BasePeptide:
                     elif modpos + self.offset_in_proteins[prot] + 1 == len(self.protein_seqs[prot]) + 1:
                         ambiguous_pos_string = ambiguous_pos_string.replace(prot, 'C-term')
                     else:
-                        ambiguous_pos_string = ambiguous_pos_string.replace(prot, 'X') # terminal in peptide but not in protein.
+                        break
+                    #    ambiguous_pos_string = ambiguous_pos_string.replace(prot, 'X') # terminal in peptide but not in protein.
                 else:
                     protein_modpos = modpos + self.offset_in_proteins[prot] - 1
                     repl = self.protein_seqs[prot][ protein_modpos - 1 ] + str(protein_modpos)
                     ambiguous_pos_string = ambiguous_pos_string.replace(prot, repl)
-            self.ambiguous_modpos[modpos] = ambiguous_pos_string    
+            if ambiguous_pos_string != self.protein_groups:
+                self.ambiguous_modpos[modpos] = ambiguous_pos_string    
             
 
     def get_occupancy_string(self):
         #self.occupancy: dict[] = {} # {modpos: {modname: {occupancy: #.##, total_intensity: ####}}}
         aa_info = []
-        for modpos in sorted(self.mods):
-            modpos_string = self.ambiguous_modpos[modpos]+'['
-            mod_occupancies = []
-            for mod in self.mods[modpos]:
-                if self.mods[modpos][mod]>0:
-                    mod_occupancies.append(f"{mod}({self.mods[modpos][mod]/self.total_intensity:.4f})")
-            modpos_string+=', '.join(mod_occupancies)
-            modpos_string+=']'
-            aa_info.append(modpos_string)
+        for modpos in sorted(self.ambiguous_modpos):
+            if self.mods[modpos]:
+                modpos_string = self.ambiguous_modpos[modpos]+'['
+                mod_occupancies = []
+                for mod in self.mods[modpos]:
+                    if self.mods[modpos][mod]>0:
+                        mod_occupancies.append(f"{mod}({self.mods[modpos][mod]/self.total_intensity:.4f})")
+                if mod_occupancies:
+                    modpos_string+=', '.join(mod_occupancies)
+                    modpos_string+=']'
+                    aa_info.append(modpos_string)
+                else: 
+                    continue
         return '; '.join(aa_info)
             
     def write_output(self):
