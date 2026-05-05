@@ -14,4 +14,5 @@ dependencies = [
     "scikit-learn>=1.8.0",
     "markdown-pdf>=1.3",
     "limma-py>=0.1.0",
+    "adjusttext>=1.3.0",
 ]
